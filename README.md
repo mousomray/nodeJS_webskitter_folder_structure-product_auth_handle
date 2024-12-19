@@ -14,3 +14,11 @@
 8) Create a webservice folder all api controller will be present there 
 9) Handle this whole name routing system in app.js file code is already present 
 10) All route will be operate through route lebel not direct route just like <%= generateUrl('product')%> product is my route name
+
+# How to Apply CK editor?
+1) Put ck editor js link in your common head.ejs file
+2) Put ck edit code in your ejs with script tag 
+3) Which field you want to keep under ckEditor that input should be textarea 
+4) When you show textarea field when you show list of data for ejs you have to use<%- %> in the place of <%= %> and for react you have to use dangeraously set innerhtml
+
+

@@ -5,25 +5,22 @@ class ProductRepo {
 
     // Add product function
     async createProduct(productData) {
-        const product = new ProductModel(productData);
-        return await product.save();
+        return ProductModel.create(productData)
     }
 
     // All products function for admin pannel
     async allProducts() {
-        const products = await ProductModel.find();
-        return products;
+        return await ProductModel.find();
     }
 
-     // Fetch product for api and use filter parameter for search 
-     async getActiveProducts(filter) {
+    // Fetch product for api and use filter parameter for search 
+    async getActiveProducts(filter) {
         return await ProductModel.find({ active: true, ...filter });
     }
 
     // Fetch single product
     async oneProduct(id) {
-        const product = await ProductModel.findById(id);
-        return product;
+        return await ProductModel.findById(id);
     }
 
     // Update product 
@@ -55,8 +52,7 @@ class ProductRepo {
 
     // Create cart
     async createCart(userId, products) {
-        const newCart = new CartModel({ userId, products });
-        return await newCart.save();
+        return await CartModel.create({ userId, products });
     }
 
     // Save cart item into the database

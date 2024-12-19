@@ -198,31 +198,17 @@
               </div>
 
               <!-- Description Field -->
-              <div>
-                <label
-                  for="description"
-                  style="
-                    display: block;
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                    color: #495057;
-                  "
-                  >Description</label
-                >
+              <div class="form-group">
+                <label for="exampleInputEmail1">Description</label>
                 <textarea
-                  id="description"
+                  class="form-control"
+                  rows="3"
                   name="description"
-                  rows="5"
-                  placeholder="Enter product description"
                   required
-                  style="
-                    width: 100%;
-                    padding: 10px;
-                    border: 1px solid #ced4da;
-                    border-radius: 5px;
-                    font-size: 16px;
-                  "
-                ></textarea>
+                  placeholder="Enter product description"
+                  id="description"
+                >
+                </textarea>
               </div>
 
               <!-- Submit Button -->
@@ -247,6 +233,14 @@
             </form>
           </div>
         </main>
+
+        <script>
+          ClassicEditor.create(document.querySelector("#description")).catch(
+            (error) => {
+              console.error(error);
+            }
+          );
+        </script>
 
         <%- include('../common/footer.ejs') %>
       </div>

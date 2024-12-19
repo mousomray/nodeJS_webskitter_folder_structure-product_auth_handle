@@ -15,8 +15,7 @@ class AuthRepo {
 
     // Create user 
     async createUser(userData) {
-        const user = new UserModel(userData);
-        return await user.save();
+        return UserModel.create(userData);
     }
 
     // Find useID and otp for email verify 

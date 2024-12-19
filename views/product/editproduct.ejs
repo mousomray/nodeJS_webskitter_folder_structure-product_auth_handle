@@ -218,25 +218,17 @@
 
               <!-- Description Field -->
               <div class="form-group">
-                <label for="p_description" style="font-weight: bold; color: #495057"
-                  >Product Description</label
-                >
-                <input
-                  type="text"
+                <label for="exampleInputEmail1">Description</label>
+                <textarea
                   class="form-control"
-                  id="description"
+                  rows="3"
                   name="description"
                   required
-                  minlength="10"
                   placeholder="Enter product description"
-                  value="<%= product.description %>"
-                  style="border: 1px solid #ced4da; border-radius: 5px; padding: 10px"
-                />
-                <small
-                  class="form-text text-muted"
-                  style="font-size: 12px; color: red"
-                  >Product Description must be at least 10 characters.</small
+                  id="description"
                 >
+                <%= product.description %>
+                </textarea>
               </div>
 
               <!-- Submit Button -->
@@ -261,6 +253,14 @@
             </form>
           </div>
         </main>
+
+        <script>
+          ClassicEditor.create(document.querySelector("#description")).catch(
+            (error) => {
+              console.error(error);
+            }
+          );
+        </script>
 
         <%- include('../common/footer.ejs') %>
       </div>

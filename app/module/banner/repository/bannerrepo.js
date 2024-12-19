@@ -4,20 +4,17 @@ class BannerRepo {
 
     // Add banner function
     async createBanner(bannerData) {
-        const banner = new BannerModel(bannerData);
-        return await banner.save();
+        return await BannerModel.create(bannerData);
     }
 
     // All banners function
     async allBanners() {
-        const banners = await BannerModel.find();
-        return banners;
+        return await BannerModel.find();
     }
 
     // single banner function 
     async oneBanner(id) {
-        const banner = await BannerModel.findById(id);
-        return banner;
+        return await BannerModel.findById(id);
     }
 
     // Update banner 
