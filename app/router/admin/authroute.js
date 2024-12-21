@@ -17,5 +17,9 @@ namedRouter.get('logout', '/admin/logout', authController.logout)
 namedRouter.get('profile', '/admin/profile', AdminuiAuth, authController.profilepage)
 namedRouter.get('updatepassword', '/admin/updatepassword', AdminuiAuth, authController.updatepasswordGet)
 namedRouter.post('updatepasswordcreate', '/admin/updatepasswordcreate', AdminuiAuth, authController.updatepasswordPost)
+namedRouter.get('resetpasswordlink', '/admin/resetpasswordlink', authController.resetpasswordlinkGet)
+namedRouter.post('resetpasswordlinkcreate', '/admin/resetpasswordlinkcreate', authController.resetpasswordlinkPost)
+namedRouter.get('forgetpassword', '/admin/forgetpassword/:id/:token', authController.forgetPasswordGet)
+namedRouter.post('forgetpasswordcreate', '/admin/forgetpasswordcreate/:id/:token', authController.forgetPasswordPost)
 
 module.exports = router; 

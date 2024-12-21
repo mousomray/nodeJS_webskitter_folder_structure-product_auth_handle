@@ -13,6 +13,13 @@ class AuthRepo {
         return await UserModel.findById(userId);
     }
 
+    // Find by userId and Hashpassword
+    async findByIdHashpassword(userId, hashedPassword) {
+        return await UserModel.findByIdAndUpdate(userId, {
+            $set: { password: hashedPassword }
+        }, { new: true });
+    }
+
     // Create user 
     async createUser(userData) {
         return UserModel.create(userData);

@@ -219,6 +219,103 @@ class adminAuthController {
             return res.redirect(generateUrl('updatepassword'))
         }
     }
+
+    // Reset Password UI link for forget password 
+    async resetpasswordlinkGet(req, res) {
+        return res.render('auth/passwordreset', { user: req.user })
+    }
+
+    // Reset Password post 
+    async resetpasswordlinkPost(req, res) {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                req.flash('err', 'Email is Required')
+                return res.redirect(generateUrl('resetpasswordlink'));
+            }
+            const user = await AuthRepo.findByEmail(email);
+            if (!user) {
+                req.flash('err', 'Email doesnot exist')
+                return res.redirect(generateUrl('resetpasswordlink'));
+            }
+            // Generate token for password reset
+            const secret = user._id + process.env.ADMIN_API_KEY;
+            const token = jwt.sign({ userID: user._id }, secret, { expiresIn: '5m' });
+            console.log("My forget token...", token)
+            // Reset Link and this link generate by frontend developer
+            // FRONTEND_HOST_FORGETPASSWORD = http://localhost:3004/forgetpassword
+            const resetLink = `${process.env.FRONTEND_HOST_FORGETPASSWORD}/${user._id}/${token}`;
+            // Send password reset email  
+            await transporter.sendMail({
+                from: process.env.EMAIL_FROM,
+                to: user.email,
+                subject: "Password Reset Link",
+                // html: `<p>Hello ${user.name},</p><p>Please <a href="${resetLink}">Click here</a> to reset your password.</p>`
+                html: 'Your email is sucessfully verified'
+            });
+            // Send success response
+            req.flash('sucess', 'Your email is verified')
+            return res.redirect(generateUrl('forgetpassword', { id: user._id, token }));
+        } catch (error) {
+            console.log(error);
+            req.flash('err', 'Error something went wrong')
+            return res.redirect(generateUrl('resetpasswordlink'));
+
+        }
+    }
+
+    // Forget Password get
+    async forgetPasswordGet(req, res) {
+        const { id, token } = req.params;
+        return res.render('auth/forgetpassword', { userId: id, token: token, user: req.user });
+    }
+
+    // Forget Password
+    async forgetPasswordPost(req, res) {
+        try {
+            const { id, token } = req.params;
+            const { password, confirmPassword } = req.body;
+            const user = await AuthRepo.findById(id)
+            console.log("My user...", user)
+            if (!user) {
+                req.flash('err', 'User Not Found')
+                return res.redirect(generateUrl('forgetpassword', { id, token }));
+            }
+            // Validate token check 
+            const new_secret = user._id + process.env.ADMIN_API_KEY;
+            jwt.verify(token, new_secret);
+
+            if (!password || !confirmPassword) {
+                req.flash('err', 'New password and confirm password are required')
+                return res.redirect(generateUrl('forgetpassword', { id, token }));
+            }
+
+            if (password.length < 8) {
+                req.flash('err', "Password should be atleast 8 characters long")
+                return res.redirect(generateUrl('forgetpassword', { id, token }));
+            }
+
+            if (password !== confirmPassword) {
+                req.flash('err', 'New password and confirm password are not matched')
+                return res.redirect(generateUrl('forgetpassword', { id, token }));
+            }
+            // Generate salt and hash new password
+            const salt = await bcrypt.genSalt(10);
+            const newHashPassword = await bcrypt.hash(password, salt);
+
+            // Update user's password
+            await AuthRepo.findByIdHashpassword(user._id, newHashPassword);
+
+            // Send success response
+            req.flash('sucess', 'Password changes successfully')
+            return res.redirect(generateUrl('login'));
+
+        } catch (error) {
+            req.flash('err', 'Error updating password')
+            return res.redirect(generateUrl('forgetpassword', { id, token }));
+        }
+    }
+
 }
 
 module.exports = new adminAuthController();
