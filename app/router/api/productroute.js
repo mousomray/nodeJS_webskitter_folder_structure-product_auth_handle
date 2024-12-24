@@ -10,7 +10,8 @@ const namedRouter = routeLabel(router);
 namedRouter.get('products', '/products', UserAuth, productController.showproduct)
 namedRouter.get('categories', '/products/categories', UserAuth, productController.showCategories)
 namedRouter.get('categorydetails', '/products/category/:category', UserAuth, productController.categorydetails)
-namedRouter.get('search', '/products/search', UserAuth, productController.search)
+namedRouter.get('search', '/products/search', UserAuth, productController.search) // Search using query parameter
+namedRouter.post('searchPost', '/products/search', UserAuth, productController.searchPost) // Search using post data
 namedRouter.post('addcart', '/addcart', UserAuth, productController.addToCart)
 namedRouter.get('cart', '/cart/:userId', UserAuth, productController.getCart)
 namedRouter.put('lesscart', '/lesscart', UserAuth, productController.lessCart)

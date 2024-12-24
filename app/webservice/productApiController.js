@@ -2,11 +2,28 @@ const ProductRepo = require('../module/product/repository/productrepo')
 
 class productApiController {
 
-    // Product list
-    async showproduct(req, res) { 
+    // Product list with pagination
+    async showproduct(req, res) {
         try {
-            const products = await ProductRepo.getActiveProducts();
-            res.status(200).json({ succes: true, message: "Product data retrive sucessfully", products, total: products.length });
+            const page = parseInt(req.query.page) || 1
+            const limit = 3
+            const totalData = await ProductRepo.countProduct();
+            const totalPage = Math.ceil(totalData / limit)
+            const nextPage = totalPage > page ? page + 1 : null
+            const prevPage = page > 1 ? page - 1 : null
+
+            const products = await ProductRepo.getActiveProducts(page, limit);
+            res.status(200).json({
+                message: "Product retrieved successfully",
+                products,
+                pagination: {
+                    page,
+                    prevPage,
+                    nextPage,
+                    totalPage,
+                    totalData,
+                }
+            });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: "Error retrieving products" });
@@ -47,15 +64,18 @@ class productApiController {
         }
     }
 
-    // Search API for filtering products by name
+    // Search with query parameter
     async search(req, res) {
-        const { title } = req.query;
+        const { title, category } = req.query;
         const filter = {};
         if (title) {
             filter.title = { $regex: new RegExp(title, 'i') };
         }
+        if (category) {
+            filter.category = { $regex: new RegExp(category, 'i') };
+        }
         try {
-            const products = await ProductRepo.getActiveProducts(filter);
+            const products = await ProductRepo.getSearchProduct(filter);
             res.status(200).json({
                 message: 'Search products retrieved successfully',
                 total: products.length,
@@ -63,6 +83,17 @@ class productApiController {
             });
         } catch (error) {
             console.error('Error retrieving search products:', error);
+            res.status(500).json({ message: 'Error retrieving products' });
+        }
+    }
+
+    // Search with post data Sir
+    async searchPost(req, res) {
+        try {
+            const search = req.body.search;
+            const products = await ProductRepo.postSearchProduct(search);
+            res.status(200).json({ message: "Search data get successfully", products });
+        } catch (error) {
             res.status(500).json({ message: 'Error retrieving products' });
         }
     }
@@ -140,7 +171,7 @@ class productApiController {
 
 
     // Decrease cart item
-    async lessCart(req, res) {  
+    async lessCart(req, res) {
         try {
             const { userId, productId, quantity } = req.body;
             if (!userId || !productId || quantity === undefined) {

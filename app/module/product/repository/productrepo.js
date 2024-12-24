@@ -13,9 +13,32 @@ class ProductRepo {
         return await ProductModel.find();
     }
 
-    // Fetch product for api and use filter parameter for search 
-    async getActiveProducts(filter) {
-        return await ProductModel.find({ active: true, ...filter });
+    // Fetch product for api where I add pagination
+    async getActiveProducts(page, limit) {
+        const skip = (page - 1) * limit;
+        return await ProductModel.find({ active: true }).skip(skip).limit(limit);
+    }
+
+    // Get search product with query parameter
+    async getSearchProduct(filter) {
+        return await ProductModel.find({ active: true, ...filter })
+    }
+
+    // Get search with post data show by sir
+    async postSearchProduct(search) {
+        const query = {
+            $or: [
+                { title: { $regex: search, $options: 'i' } },
+                { category: { $regex: search, $options: 'i' } }
+            ],
+            active: true
+        };
+        return await ProductModel.find(query); 
+    }
+
+    // Total product 
+    async countProduct() {
+        return await ProductModel.countDocuments({ active: true });
     }
 
     // Fetch single product
@@ -40,7 +63,7 @@ class ProductRepo {
 
     // Find by category 
     async categoryDetails(categoryRegex) {
-        return await ProductModel.find({ category: categoryRegex });
+        return await ProductModel.find({ active: true, category: categoryRegex });
     }
 
     /** Handle add to cart area */
